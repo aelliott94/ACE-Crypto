@@ -17,11 +17,8 @@ key = Fernet.generate_key()
 f = Fernet(key)
 
 
-token = f.encrypt(b"Here is my secret code!")
+token = f.encrypt("Here is my secret code!")
 
-# # HMAC(random key, hash)
-# key = os.urandom(32)
-# h = HMAC(key, hashes.SHA256())
 tag = create_hmac(token)
 
 print("verifying key 1")
