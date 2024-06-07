@@ -14,15 +14,19 @@ f2 = Fernet(key2)
 token = f.encrypt(b"Here is my secret code!")
 
 # HMAC(random key, hash)
-h = HMAC(os.urandom, hashes.SHA256())
+key = os.urandom(32)
+h = HMAC(key, hashes.SHA256())
 
 h.update(b"message to hash")
 
 h_copy = h.copy() # get a copy of `h' to be reused
 
-h.verify(b"signature")
+signature = h_copy.finalize()
+print(signature)
 
-h_copy.verify(b"an incorrect signature")
+print("verifying key 1")
+
+h.verify(signature)
 
 print(token)
 

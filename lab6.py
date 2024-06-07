@@ -4,9 +4,9 @@ from cryptography.fernet import Fernet
 
 from cryptography.hazmat.primitives import hashes, hmac
 
+import os
 
-
-key = b'AAAAAAAAAAAAAAAA'
+key = os.urandom()
 
 def create_hmac(data):
     h = hmac.HMAC(key, hashes.SHA256())
