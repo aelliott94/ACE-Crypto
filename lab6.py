@@ -1,7 +1,6 @@
 
 
 from cryptography.fernet import Fernet
-from cryptography.hazmat.primitives.hmac import hashes, HMAC
 
 from cryptography.hazmat.primitives import hashes, hmac
 
