@@ -56,6 +56,16 @@ signature = private_key.sign(
     
 )
 
+# encryption process
+ciphertext = public_key.encrypt(
+    message,
+    padding.OAEP(
+        mgf=padding.MGF1(algorithm=hashes.SHA256()),
+        algorithm=hashes.SHA256(),
+        label=None
+    )
+)
+
 # verification section
 public_key.verify(
     signature,
@@ -67,18 +77,8 @@ public_key.verify(
     hashes.SHA256()
 )
 
-# encryption process
-ciphertext = public_key.encrypt(
-    message,
-    padding.OAEP(
-        mgf=padding.MGF1(algorithm=hashes.SHA256()),
-        algorithm=hashes.SHA256(),
-        label=None
-    )
-)
-
 # decryption process
-plaintext = private_key.decrypt(
+symettric_key_out = private_key.decrypt(
     ciphertext,
     padding.OAEP(
         mgf=padding.MGF1(algorithm=hashes.SHA256()),
@@ -87,12 +87,12 @@ plaintext = private_key.decrypt(
     )
 )
 
-print("plaintext", plaintext)
+print("symettric_key_out", symettric_key_out)
 
 
 # END ASYMETTRIC
 
-f = Fernet(plaintext)
+f = Fernet(symettric_key_out)
 
 
 token = f.encrypt(b"THIS IS THE NEW KEY FOR THE RADIO")
