@@ -8,6 +8,7 @@ from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives.hmac import hashes, HMAC
 import os
 
+from datetime import datetime
 
 def create_hmac(data, key):
     h = HMAC(key, hashes.SHA256())
@@ -19,6 +20,15 @@ def verify_hmac(data, key, tag):
     h.update(data)
     h.verify(tag)
 
+def vertifyTimestamp(data):
+    data = data.decode("utf-8")
+    print(data)
+    date = data.split(" ~ ")[1].split('.')[0]
+    print("stampdate ", date)
+    nowDate = str(datetime.now()).split('.')[0]
+    print("nowdate   ", nowDate)
+
+    return(nowDate == date)
 # generating Symettric private key to share
 
 symettric_key = Fernet.generate_key()
@@ -31,7 +41,7 @@ print(symettric_key)
 # generating private key
 private_key = rsa.generate_private_key(
     public_exponent=65537,
-    key_size=2048, # 2048 is a happy-medium between security and performance
+    key_size=4096, # 2048 is a happy-medium between security and performance
 )
 
 # generating public key
@@ -89,14 +99,19 @@ print("symettric_key_out", symettric_key_out)
 
 f = Fernet(symettric_key_out)
 
+plaintext = bytes("THIS IS THE NEW KEY FOR THE RADIO ~ " + str(datetime.now()), 'UTF-8')
 
-token = f.encrypt(b"THIS IS THE NEW KEY FOR THE RADIO")
+print(plaintext)
+
+token = f.encrypt(plaintext)
 
 tag = create_hmac(token, symettric_key)
 
 print("verifying key 1")
 
 verify_hmac(token,symettric_key, tag)
+
+
 
 print("key 1 verified")
 
@@ -105,6 +120,7 @@ print(token)
 
 dec = f.decrypt(token)
 
+print("correct timeframe" if vertifyTimestamp(dec) else "incorrect timeframe")
 
 print(dec)
 
