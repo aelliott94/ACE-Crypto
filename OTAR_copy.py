@@ -10,6 +10,9 @@ import os
 import datetime
 import base64
 
+from datetime import datetime, timedelta
+
+
 class Client:
 
     def __init__(self):
@@ -96,6 +99,14 @@ def verify_message(public_key, signature, message):
         hashes.SHA256()
     )
 
+def vertifyTimestamp(data):
+    date_format = "%Y-%m-%d %H:%M:%S.%f"
+
+    data = data.decode("utf-8").split(" ~ ")[1]
+    date_data = datetime.strptime(data, date_format)
+
+    return(abs(datetime.now() - date_data) < timedelta(seconds=1))
+
 
 def main():
 
@@ -124,7 +135,7 @@ def main():
     print("Starting symmetric encryption: ")
 
     # radio sends secret message to client
-    secret_message = b"This is the secret message"
+    secret_message = bytes("This is the secret message" + " ~ " + str(datetime.now()), 'UTF-8')
 
     encrypted = radio.encrypt_symmetric_message(secret_message)
 
@@ -132,7 +143,10 @@ def main():
 
     client.verify_hmac(encrypted, HMAC1)
 
-    print(client.decrypt_symmetric_message(encrypted))
+    decryped_message = client.decrypt_symmetric_message(encrypted)
+
+        
+    print("correct timeframe" if vertifyTimestamp(decryped_message) else "incorrect timeframe")
 
     # client sends secret message to radio
     secret_message_2 = b"Received secret message"
@@ -144,6 +158,8 @@ def main():
     radio.verify_hmac(encrypted_2, HMAC2)
 
     print(radio.decrypt_symmetric_message(encrypted_2))
+
+
 
 if __name__ == '__main__':
     main()
