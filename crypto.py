@@ -25,6 +25,8 @@ def symmetric_encrpytion():
 
     dec = f.decrypt(token)
 
+    print(dec)
+
 
 """
 This is an HMAC scheme using a []-bit key and SHA-256 hash.
