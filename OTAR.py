@@ -38,11 +38,6 @@ private_key = rsa.generate_private_key(
 public_key = private_key.public_key()
 
 
-pem = public_key.public_bytes(
-    encoding=serialization.Encoding.PEM,
-    format=serialization.PublicFormat.SubjectPublicKeyInfo
-)
-pem.splitlines()[0]
 
 # signing the message which allows anyone with the public key to confirm attribution
 message = symettric_key
