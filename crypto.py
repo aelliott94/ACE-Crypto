@@ -1,7 +1,9 @@
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives.hmac import hashes, HMAC
 import os
+import quantumrandom
 
+random_key = os.urandom(32)
 
 def create_hmac(data, key):
     h = HMAC(key, hashes.SHA256())
@@ -19,11 +21,11 @@ f = Fernet(key)
 
 token = f.encrypt(b"Here is my secret code!")
 
-tag = create_hmac(token, key)
+tag = create_hmac(token, random_key)
 
 print("verifying key 1")
 
-verify_hmac(token,key, tag)
+verify_hmac(token,random_key, tag)
 
 print("key 1 verified")
 
