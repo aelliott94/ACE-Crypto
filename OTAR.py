@@ -94,6 +94,10 @@ print("symettric_key_out", symettric_key_out)
 
 f = Fernet(symettric_key_out)
 
+f2 = Fernet(symettric_key_out)
+
+print(f == f2)
+
 
 token = f.encrypt(b"THIS IS THE NEW KEY FOR THE RADIO")
 
