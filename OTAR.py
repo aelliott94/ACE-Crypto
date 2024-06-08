@@ -8,6 +8,7 @@ from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives.hmac import hashes, HMAC
 import os
 
+from datetime import datetime, timedelta
 
 def create_hmac(data, key):
     h = HMAC(key, hashes.SHA256())
@@ -18,6 +19,15 @@ def verify_hmac(data, key, tag):
     h = HMAC(key, hashes.SHA256())
     h.update(data)
     h.verify(tag)
+
+def vertifyTimestamp(data):
+    date_format = "%Y-%m-%d %H:%M:%S.%f"
+
+    data = data.decode("utf-8").split(" ~ ")[1]
+
+    date_data = datetime.strptime(data, date_format)
+    
+    return(abs(datetime.now() - date_data) < timedelta(seconds=1))
 
 # generating Symettric private key to share
 
@@ -31,18 +41,13 @@ print(symettric_key)
 # generating private key
 private_key = rsa.generate_private_key(
     public_exponent=65537,
-    key_size=2048, # 2048 is a happy-medium between security and performance
+    key_size=4096, # 2048 is a happy-medium between security and performance
 )
 
 # generating public key
 public_key = private_key.public_key()
 
 
-pem = public_key.public_bytes(
-    encoding=serialization.Encoding.PEM,
-    format=serialization.PublicFormat.SubjectPublicKeyInfo
-)
-pem.splitlines()[0]
 
 # signing the message which allows anyone with the public key to confirm attribution
 message = symettric_key
@@ -98,14 +103,19 @@ f2 = Fernet(symettric_key_out)
 
 print(f == f2)
 
+plaintext = bytes("THIS IS THE NEW KEY FOR THE RADIO ~ " + str(datetime.now()), 'UTF-8')
 
-token = f.encrypt(b"THIS IS THE NEW KEY FOR THE RADIO")
+print(plaintext)
+
+token = f.encrypt(plaintext)
 
 tag = create_hmac(token, symettric_key)
 
 print("verifying key 1")
 
 verify_hmac(token,symettric_key, tag)
+
+
 
 print("key 1 verified")
 
@@ -114,6 +124,7 @@ print(token)
 
 dec = f.decrypt(token)
 
+print("correct timeframe" if vertifyTimestamp(dec) else "incorrect timeframe")
 
 print(dec)
 
