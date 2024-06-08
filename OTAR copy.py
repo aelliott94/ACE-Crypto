@@ -121,6 +121,7 @@ def main():
     output = client.decrypt_asymmetric_message(ciphertext)
     client.set_symmetric_key(output)
 
+    print("Starting symmetric encryption: ")
 
     # radio sends secret message to client
     secret_message = b"This is the secret message"
@@ -131,8 +132,9 @@ def main():
 
     client.verify_hmac(encrypted, HMAC1)
 
-    # client sends secret message to radio
+    print(client.decrypt_symmetric_message(encrypted))
 
+    # client sends secret message to radio
     secret_message_2 = b"Received secret message"
 
     encrypted_2 = client.encrypt_symmetric_message(secret_message_2)
@@ -140,6 +142,8 @@ def main():
     HMAC2 = radio.create_hmac(encrypted_2)
 
     radio.verify_hmac(encrypted_2, HMAC2)
+
+    print(radio.decrypt_symmetric_message(encrypted_2))
 
 if __name__ == '__main__':
     main()
