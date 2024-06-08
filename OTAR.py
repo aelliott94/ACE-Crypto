@@ -8,7 +8,7 @@ from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives.hmac import hashes, HMAC
 import os
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 def create_hmac(data, key):
     h = HMAC(key, hashes.SHA256())
@@ -23,12 +23,16 @@ def verify_hmac(data, key, tag):
 def vertifyTimestamp(data):
     data = data.decode("utf-8")
     print(data)
-    date = data.split(" ~ ")[1].split('.')[0]
-    print("stampdate ", date)
-    nowDate = str(datetime.now()).split('.')[0]
-    print("nowdate   ", nowDate)
 
-    return(nowDate == date)
+    date_format = "%Y-%m-%d %H:%M:%S.%f"
+
+    mydate = data.split(" ~ ")[1]
+    date_data = datetime.strptime(mydate, date_format)
+    date_now = datetime.now()
+    
+    print(abs(date_now - date_data) )
+    return(abs(date_now - date_data) < timedelta(seconds=1))
+
 # generating Symettric private key to share
 
 symettric_key = Fernet.generate_key()
