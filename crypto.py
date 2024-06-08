@@ -3,8 +3,6 @@ from cryptography.hazmat.primitives.hmac import hashes, HMAC
 import os
 import quantumrandom
 
-random_key = os.urandom(32)
-
 def create_hmac(data, key):
     h = HMAC(key, hashes.SHA256())
     h.update(data)
@@ -15,24 +13,36 @@ def verify_hmac(data, key, tag):
     h.update(data)
     h.verify(tag)
 
-key = Fernet.generate_key()
-f = Fernet(key)
+"""
+This encryption scheme uses Fernet, a 128-bit AES scheme in CBC mode.
+"""
+def symmetric_encrpytion():
+
+    key = Fernet.generate_key()
+    f = Fernet(key)
+
+    token = f.encrypt(b"Here is my secret code!")
+
+    dec = f.decrypt(token)
 
 
-token = f.encrypt(b"Here is my secret code!")
+"""
+This is an HMAC scheme using a []-bit key and SHA-256 hash.
+"""
+def symmetric_mac():
+    # key = Fernet.generate_key()
+    # f = Fernet(key)
+    # token = f.encrypt(b"Here is my secret code!")
 
-tag = create_hmac(token, random_key)
-
-print("verifying key 1")
-
-verify_hmac(token,random_key, tag)
-
-print("key 1 verified")
-
-print(token)
-
-
-dec = f.decrypt(token)
+    token = b"hello world!"
+    random_key = os.urandom(32)
+    tag = create_hmac(token, random_key)
+    verify_hmac(token,random_key, tag)
 
 
-print(dec)
+def main():
+    symmetric_encrpytion()
+    symmetric_mac()
+
+if __name__ == '__main__':
+    main()
