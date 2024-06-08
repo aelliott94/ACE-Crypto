@@ -21,17 +21,13 @@ def verify_hmac(data, key, tag):
     h.verify(tag)
 
 def vertifyTimestamp(data):
-    data = data.decode("utf-8")
-    print(data)
-
     date_format = "%Y-%m-%d %H:%M:%S.%f"
 
-    mydate = data.split(" ~ ")[1]
-    date_data = datetime.strptime(mydate, date_format)
-    date_now = datetime.now()
+    data = data.decode("utf-8").split(" ~ ")[1]
+
+    date_data = datetime.strptime(data, date_format)
     
-    print(abs(date_now - date_data) )
-    return(abs(date_now - date_data) < timedelta(seconds=1))
+    return(abs(datetime.now() - date_data) < timedelta(seconds=1))
 
 # generating Symettric private key to share
 
